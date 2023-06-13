@@ -1,12 +1,31 @@
 import { highlight } from "@/lib/highlight";
+import { GetStaticPropsContext } from "next";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 
-export default function Home({ codeHTML }: { codeHTML: string }) {
-  console.log({ codeHTML });
-
+export default function Home({
+  codeHTML,
+  isPreviewMode,
+  isDraftMode,
+}: {
+  codeHTML: string;
+  isPreviewMode: boolean;
+  isDraftMode: boolean;
+}) {
   return (
     <main className="p-8 grid gap-6">
+      <pre className="p-8 rounded bg-zinc-100 text-xs leading-relaxed">
+        <code>
+          {JSON.stringify(
+            {
+              isPreviewMode,
+              isDraftMode,
+            },
+            null,
+            2
+          )}
+        </code>
+      </pre>
       <p>
         This code is highlighted using <code>@wooorm/starry-night</code>.
       </p>
@@ -17,7 +36,10 @@ export default function Home({ codeHTML }: { codeHTML: string }) {
   );
 }
 
-export async function getStaticProps() {
+export async function getStaticProps({
+  previewData,
+  draftMode,
+}: GetStaticPropsContext) {
   const contents = await fs.readFile(
     path.join(process.cwd(), "src/codesample.txt"),
     "utf8"
@@ -26,6 +48,8 @@ export async function getStaticProps() {
 
   return {
     props: {
+      isPreviewMode: Boolean(previewData),
+      isDraftMode: Boolean(draftMode),
       codeHTML: highlighted,
     },
   };
