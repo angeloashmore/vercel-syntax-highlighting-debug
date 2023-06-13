@@ -5,16 +5,16 @@ import path from "path";
 
 let starryNight: Awaited<ReturnType<typeof createStarryNight>>;
 
+// Needed for Next.js to include the vendored `onig.wasm` file.
+// This code should have no effect in production.
+if (false) {
+  fs.access(path.join(process.cwd(), "vendor/vscode-oniguruma/onig.wasm"));
+}
+
 export async function highlight(
   input: string,
   language: string
 ): Promise<string> {
-  // Needed for Next.js to include the vendored `onig.wasm` file.
-  // This code should have no effect in production.
-  if (false) {
-    fs.readFile(path.join(process.cwd(), "vendor/vscode-oniguruma/onig.wasm"));
-  }
-
   if (!starryNight) {
     starryNight = await createStarryNight(all, {
       getOnigurumaUrlFs: async () => {
